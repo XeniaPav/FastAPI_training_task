@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: url_shortener
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "8080:8000"   # если uvicorn слушает на 8000 порту внутри контейнера
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/url_shortener
+
+  migrator:
+    build: .
+    depends_on:
+      - db
+    command: alembic upgrade head
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/url_shortener
+
+volumes:
+  pgdata:

@@ -9,7 +9,6 @@ app.include_router(url_router)
 
 app.include_router(async_router)
 
-
 if __name__ == "__main__":
     import uvicorn
 
